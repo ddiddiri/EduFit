@@ -3,7 +3,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import "./global.css";
 
@@ -28,6 +28,7 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -37,10 +38,13 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      setTimeout(() => {
+        setIsSplashVisible(false);
+      }, 2000);
     }
   }, [loaded]);
 
-  if (!loaded) {
+  if (!loaded || isSplashVisible) {
     return <MySplashScreen />;
   }
 
