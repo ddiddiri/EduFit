@@ -5,6 +5,12 @@ export const content = [
 ];
 export const presets = [require("nativewind/preset")];
 export const theme = {
-  extend: {},
+  extend: {
+    colors: {
+      primary: "#4F46E5",
+      secondary: "#00FF00",
+      tertiary: "#0000FF",
+    },
+  },
 };
 export const plugins = [];
