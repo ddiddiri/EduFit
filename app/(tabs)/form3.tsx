@@ -4,6 +4,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CheckboxItem, ErrorMessage, FormButton, FormHeader, FormInput } from '../../components/FormUI';
+import { supabase } from '../../constants/supabase';
 import { TotalForm } from '../../types/form.schema';
 
 export default function Form3Screen() {
@@ -27,9 +28,55 @@ export default function Form3Screen() {
     { label: "교사 연수", value: "교사연수" },
   ];
 
-  const onSubmit = (data: TotalForm) => {
-    console.log('Final Form Data:', data);
-    router.push('/result');
+  const onSubmit = async (data: TotalForm) => {
+    try {
+      const { data: submission, error: subError } = await supabase
+        .from('form_submissions')
+        .insert([{ status: '접수완료' }])
+        .select()
+        .single();
+
+      if (subError) throw subError;
+
+      const submissionId = submission.id;
+
+      const results = await Promise.all([
+        supabase.from('school_info').insert([{
+          submission_id: submissionId,
+          type: data.school_type,
+          name: data.school_name,
+          area: data.school_area,
+        }]),
+        supabase.from('teacher_info').insert([{
+          submission_id: submissionId,
+          name: data.teacher_name,
+          phone: data.teacher_phone,
+        }]),
+        supabase.from('student_info').insert([{
+          submission_id: submissionId,
+          target_grade: data.student_target_grade,
+          student_count: parseInt(data.student_number) || 0,
+          level: data.student_level,
+        }]),
+        supabase.from('education_config').insert([{
+          submission_id: submissionId,
+          resources: data.school_resource,
+          goals: data.education_goal,
+          period: data.education_period,
+          date: data.education_date,
+        }]),
+      ]);
+
+      const firstError = results.find(r => r.error)?.error;
+      if (firstError) throw firstError;
+
+      alert('상담 신청이 완료되었습니다!');
+      reset();
+      router.push('/');
+    } catch (error: any) {
+      console.error('Submission Error:', error);
+      alert('제출 중 오류가 발생했습니다: ' + error.message);
+    }
   };
 
   const handleToggleArray = (value: string, currentArray: string[], onChange: (val: string[]) => void) => {
