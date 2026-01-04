@@ -11,6 +11,9 @@ export const theme = {
       secondary: "#00FF00",
       tertiary: "#0000FF",
     },
+    fontFamily: {
+      pretendard: ["PretendardVariable"],
+    },
   },
 };
 export const plugins = [];
