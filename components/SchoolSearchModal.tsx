@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { School, fetchSchools } from '../services/neis';
@@ -15,17 +15,20 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
   const [results, setResults] = useState<School[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSearch = useCallback(async (text: string) => {
-    setSearchText(text);
-    if (text.length >= 2) {
-      setIsLoading(true);
-      const schools = await fetchSchools(text);
-      setResults(schools);
-      setIsLoading(false);
-    } else {
-      setResults([]);
-    }
-  }, []);
+  React.useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchText.length >= 2) {
+        setIsLoading(true);
+        const schools = await fetchSchools(searchText);
+        setResults(schools);
+        setIsLoading(false);
+      } else {
+        setResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchText]);
 
   const handleSelect = (school: School) => {
     let type: '초등학교' | '중학교' | '고등학교' = '초등학교';
@@ -61,7 +64,7 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
               placeholder="학교명을 입력하세요 (2글자 이상)"
               className="flex-1 ml-2 text-sm text-black"
               value={searchText}
-              onChangeText={handleSearch}
+              onChangeText={setSearchText}
               autoFocus
             />
           </View>
