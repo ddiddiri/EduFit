@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { ScrollView, Text, View } from 'react-native';
@@ -69,6 +70,11 @@ export default function Form3Screen() {
 
       const firstError = results.find(r => r.error)?.error;
       if (firstError) throw firstError;
+
+      const existingIdsJson = await SecureStore.getItemAsync('my_submissions');
+      const existingIds = existingIdsJson ? JSON.parse(existingIdsJson) : [];
+      const newIds = [...existingIds, submissionId];
+      await SecureStore.setItemAsync('my_submissions', JSON.stringify(newIds));
 
       alert('상담 신청이 완료되었습니다!');
       reset();

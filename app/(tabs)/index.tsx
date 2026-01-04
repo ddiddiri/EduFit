@@ -1,4 +1,3 @@
-
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import React from 'react';
@@ -90,6 +89,27 @@ export default function TabOneScreen() {
             <SolutionItem text="학생 교육부터 교사 전문 연수까지 통합 지원" />
             <SolutionItem text="전과목 AI 융합이 가능한 유연한 커리큘럼" />
           </View>
+        </View>
+
+        {/* 내 신청 내역 확인 섹션 */}
+        <View className="mt-12 px-6">
+          <Link href="/my-submissions" asChild>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex-row items-center justify-between p-5 bg-white rounded-2xl border border-gray-100 shadow-sm"
+            >
+              <View className="flex-row items-center">
+                <View className="w-10 h-10 bg-indigo-50 rounded-full items-center justify-center mr-4">
+                  <Ionicons name="list" size={20} color="#6366f1" />
+                </View>
+                <View>
+                  <Text className="text-base font-bold text-gray-800">내 신청 내역 확인</Text>
+                  <Text className="text-xs text-gray-400">기존에 신청한 내용을 확인하세요</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
+          </Link>
         </View>
       </ScrollView>
 
