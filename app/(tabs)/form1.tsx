@@ -1,14 +1,16 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ErrorMessage, FormButton, FormHeader, FormInput, FormSelector } from '../../components/FormUI';
+import { SchoolSearchModal } from '../../components/SchoolSearchModal';
 import { TotalForm } from '../../types/form.schema';
 
 export default function Form1Screen() {
   const router = useRouter();
-  const { control, formState: { errors }, trigger } = useFormContext<TotalForm>();
+  const { control, formState: { errors }, trigger, setValue } = useFormContext<TotalForm>();
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
 
   const schoolOptions = [
     { label: '초등학교', value: '초등학교' },
@@ -52,18 +54,31 @@ export default function Form1Screen() {
           <Controller
             control={control}
             name="school_name"
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { value } }) => (
               <>
-                <FormInput
-                  label="학교명"
-                  placeholder="예: 서울 OO초등학교"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TouchableOpacity onPress={() => setIsModalVisible(true)} activeOpacity={1}>
+                  <View pointerEvents="none">
+                    <FormInput
+                      label="학교명"
+                      placeholder="학교를 검색하세요"
+                      value={value}
+                      readOnly
+                    />
+                  </View>
+                </TouchableOpacity>
                 <ErrorMessage message={errors.school_name?.message} />
               </>
             )}
+          />
+
+          <SchoolSearchModal
+            isVisible={isModalVisible}
+            onClose={() => setIsModalVisible(false)}
+            onSelect={(school) => {
+              setValue('school_name', school.name, { shouldValidate: true });
+              setValue('school_area', school.area, { shouldValidate: true });
+              setValue('school_type', school.type, { shouldValidate: true });
+            }}
           />
 
           <Controller
