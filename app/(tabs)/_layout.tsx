@@ -5,7 +5,6 @@ import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Pressable } from 'react-native';
 
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useColorScheme } from '@/components/useColorScheme';
 import Colors from '@/constants/Colors';
 import { TotalForm, TotalFormSchema } from '@/types/form.schema';
@@ -46,7 +45,8 @@ export default function TabLayout() {
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
           // Disable the static render of the header on web
           // to prevent a hydration error in React Navigation v6.
-          headerShown: useClientOnlyValue(false, true),
+          headerShown: false,
+          tabBarStyle: { display: 'none' },
         }}>
         <Tabs.Screen
           name="index"
