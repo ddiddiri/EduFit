@@ -1,6 +1,5 @@
 import { Session, User } from "@supabase/supabase-js";
-import { makeRedirectUri } from "expo-auth-session";
-import * as QueryParams from "expo-auth-session/build/QueryParams";
+import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { supabase } from "../constants/supabase";
@@ -50,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signInWithKakao = async () => {
     try {
-      const redirectUri = makeRedirectUri({
+      const redirectUri = Linking.createURL("", {
         scheme: "edufit",
       });
 
@@ -74,15 +73,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       console.log("Debug: Auth Session Result:", result);
 
       if (result.type === "success" && result.url) {
-        const { params, errorCode } = QueryParams.getQueryParams(result.url);
+        const parsedUrl = Linking.parse(result.url);
+        const { access_token, refresh_token } = parsedUrl.queryParams || {};
 
-        if (errorCode) throw new Error(errorCode);
-
-        if (params.access_token && params.refresh_token) {
+        if (access_token && refresh_token) {
           await supabase.auth.setSession({
-            access_token: params.access_token,
-            refresh_token: params.refresh_token,
+            access_token: access_token as string,
+            refresh_token: refresh_token as string,
           });
+        } else if (result.url.includes("#")) {
+          // # 뒤에 오는 access_token 파싱 (안드로이드 대응)
+          const hash = result.url.split("#")[1];
+          const params = new URLSearchParams(hash);
+          const at = params.get("access_token");
+          const rt = params.get("refresh_token");
+
+          if (at && rt) {
+            await supabase.auth.setSession({
+              access_token: at,
+              refresh_token: rt,
+            });
+          }
         }
       }
     } catch (error) {
