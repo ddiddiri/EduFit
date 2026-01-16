@@ -58,9 +58,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         provider: "kakao",
         options: {
           redirectTo: redirectUri,
-          skipBrowserRedirect: true,
         },
       });
+
+      console.log("Debug: redirectUri:", redirectUri);
 
       if (error) throw error;
       if (!data?.url) return;
@@ -69,6 +70,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data.url,
         redirectUri
       );
+
+      console.log("Debug: Auth Session Result:", result);
 
       if (result.type === "success" && result.url) {
         const { params, errorCode } = QueryParams.getQueryParams(result.url);

@@ -71,14 +71,11 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === "login"; // check if on login screen
     const isLoginScreen = segments.join("/") === "login";
 
     if (!session && !isLoginScreen) {
-      // If not logged in and not on login screen, redirect to login
       router.replace("/login");
     } else if (session && isLoginScreen) {
-      // If logged in and on login screen, redirect to home
       router.replace("/(tabs)");
     }
   }, [session, loading, segments]);
