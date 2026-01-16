@@ -108,6 +108,15 @@ export default function Form3Screen() {
       const newIds = [...existingIds, submissionId];
       await SecureStore.setItemAsync("my_submissions", JSON.stringify(newIds));
 
+      // 알림 전송: 사용자 전용 채널 (user-notif:USER_ID)
+      await supabase.channel(`user-notif:${user.id}`).send({
+        type: "broadcast",
+        event: "submission-complete",
+        payload: {
+          message: `${data.teacher_name}님, ${data.school_name} 신청이 완료되었습니다!`,
+        },
+      });
+
       alert("상담 신청이 완료되었습니다!");
       reset();
       router.push("/");
