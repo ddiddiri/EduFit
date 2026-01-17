@@ -15,8 +15,11 @@ import { AuthProvider, useAuth } from "@/components/AuthContext";
 import MySplashScreen from "@/components/MySplashScreen";
 import { useColorScheme } from "@/components/useColorScheme";
 import { supabase } from "@/constants/supabase";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
 import { ActivityIndicator, Platform, View } from "react-native";
+
+const queryClient = new QueryClient();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -67,9 +70,11 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
