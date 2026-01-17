@@ -11,13 +11,17 @@ import { useEffect, useState } from "react";
 import "react-native-reanimated";
 import "./global.css";
 
-import { AuthProvider, useAuth } from "@/components/AuthContext";
-import MySplashScreen from "@/components/MySplashScreen";
-import { useColorScheme } from "@/components/useColorScheme";
-import { supabase } from "@/constants/supabase";
+import AuthProvider, { useAuth } from "@/app/_providers/auth";
+import { supabase } from "@/shared/constant/supabase";
+import Splash from "@/widgets/Splash/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
-import { ActivityIndicator, Platform, View } from "react-native";
+import {
+  ActivityIndicator,
+  Platform,
+  useColorScheme,
+  View,
+} from "react-native";
 
 const queryClient = new QueryClient();
 
@@ -46,7 +50,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    PretendardVariable: require("../assets/fonts/PretendardVariable.ttf"),
+    PretendardVariable: require("../shared/assets/fonts/PretendardVariable.ttf"),
     ...FontAwesome.font,
   });
   const [isSplashVisible, setIsSplashVisible] = useState(true);
@@ -66,7 +70,7 @@ export default function RootLayout() {
   }, [loaded]);
 
   if (!loaded || isSplashVisible) {
-    return <MySplashScreen />;
+    return <Splash />;
   }
 
   return (
@@ -162,7 +166,6 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: "modal" }} />
       </Stack>
     </ThemeProvider>
   );

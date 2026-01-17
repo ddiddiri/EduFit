@@ -1,6 +1,6 @@
-import { useAuth } from "@/components/AuthContext";
-import { supabase } from "@/constants/supabase";
-import { Tables } from "@/types/database.types";
+import { useAuth } from "@/app/_providers/auth";
+import { supabase } from "@/shared/constant/supabase";
+import { Tables } from "@/shared/model/database.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";

@@ -1,20 +1,18 @@
+import { Button } from "@/shared/ui/Button";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { Header } from "@/shared/ui/Header";
+import { Input } from "@/shared/ui/Input";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  CheckboxItem,
-  ErrorMessage,
-  FormButton,
-  FormHeader,
-  FormInput,
-} from "../../components/FormUI";
-import { supabase } from "../../constants/supabase";
-import { TotalForm } from "../../types/form.schema";
+import { supabase } from "../../shared/constant/supabase";
+import { TotalForm } from "../../shared/model/form.schema";
 
-import { useAuth } from "../../components/AuthContext";
+import { CheckboxItem } from "@/shared/ui/Checkbox";
+import { useAuth } from "../_providers/auth";
 
 export default function Form3Screen() {
   const router = useRouter();
@@ -129,7 +127,7 @@ export default function Form3Screen() {
   const handleToggleArray = (
     value: string,
     currentArray: string[],
-    onChange: (val: string[]) => void
+    onChange: (val: string[]) => void,
   ) => {
     const newArray = currentArray.includes(value)
       ? currentArray.filter((item) => item !== value)
@@ -139,7 +137,7 @@ export default function Form3Screen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <FormHeader title="학교 자원 & 교육 목표 (3/3)" />
+      <Header title="학교 자원 & 교육 목표 (3/3)" />
 
       <ScrollView
         className="flex-1"
@@ -213,7 +211,7 @@ export default function Form3Screen() {
             name="education_period"
             render={({ field: { onChange, onBlur, value } }) => (
               <>
-                <FormInput
+                <Input
                   label="기간"
                   placeholder="예: 1~2차시 / 3~6차시 / 4주 프로젝트 등"
                   onBlur={onBlur}
@@ -231,7 +229,7 @@ export default function Form3Screen() {
             name="education_date"
             render={({ field: { onChange, onBlur, value } }) => (
               <>
-                <FormInput
+                <Input
                   label="일정"
                   placeholder="예: 3월 둘째 주 / 5월 10일 등"
                   onBlur={onBlur}
@@ -245,7 +243,7 @@ export default function Form3Screen() {
         </View>
       </ScrollView>
 
-      <FormButton title="신청 완료" onPress={handleSubmit(onSubmit)} />
+      <Button title="신청 완료" onPress={handleSubmit(onSubmit)} />
     </SafeAreaView>
   );
 }

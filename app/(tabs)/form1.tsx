@@ -1,17 +1,15 @@
+import { Button } from "@/shared/ui/Button";
+import { ErrorMessage } from "@/shared/ui/ErrorMessage";
+import { Header } from "@/shared/ui/Header";
+import { Input } from "@/shared/ui/Input";
+import { Selector } from "@/shared/ui/Selector";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  ErrorMessage,
-  FormButton,
-  FormHeader,
-  FormInput,
-  FormSelector,
-} from "../../components/FormUI";
-import { SchoolSearchModal } from "../../components/SchoolSearchModal";
-import { TotalForm } from "../../types/form.schema";
+import { TotalForm } from "../../shared/model/form.schema";
+import { SchoolSearchModal } from "../../widgets/SchoolSearchModal/ui";
 
 export default function Form1Screen() {
   const router = useRouter();
@@ -44,7 +42,7 @@ export default function Form1Screen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <FormHeader title="기본 정보 (1/3)" />
+      <Header title="기본 정보 (1/3)" />
 
       <ScrollView
         contentContainerStyle={{ paddingBottom: 100 }}
@@ -57,7 +55,7 @@ export default function Form1Screen() {
             name="school_type"
             render={({ field: { onChange, value } }) => (
               <>
-                <FormSelector
+                <Selector
                   label="초중고"
                   options={schoolOptions}
                   selectedValue={value}
@@ -78,7 +76,7 @@ export default function Form1Screen() {
                   activeOpacity={1}
                 >
                   <View pointerEvents="none">
-                    <FormInput
+                    <Input
                       label="학교명"
                       placeholder="학교를 검색하세요"
                       value={value}
@@ -106,7 +104,7 @@ export default function Form1Screen() {
             name="school_area"
             render={({ field: { onChange, onBlur, value } }) => (
               <>
-                <FormInput
+                <Input
                   label="지역(시/군/구)"
                   placeholder="예: 서울특별시 강서구"
                   onBlur={onBlur}
@@ -123,7 +121,7 @@ export default function Form1Screen() {
             name="teacher_name"
             render={({ field: { onChange, onBlur, value } }) => (
               <>
-                <FormInput
+                <Input
                   label="담당 교사 이름"
                   placeholder="예: 홍길동"
                   onBlur={onBlur}
@@ -140,7 +138,7 @@ export default function Form1Screen() {
             name="teacher_phone"
             render={({ field: { onChange, onBlur, value } }) => (
               <>
-                <FormInput
+                <Input
                   label="연락처"
                   placeholder="예: 010-1234-5678"
                   keyboardType="phone-pad"
@@ -155,7 +153,7 @@ export default function Form1Screen() {
         </View>
       </ScrollView>
 
-      <FormButton title="다음" onPress={handleNext} />
+      <Button title="다음" onPress={handleNext} />
     </SafeAreaView>
   );
 }

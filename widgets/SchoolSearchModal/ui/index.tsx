@@ -1,21 +1,28 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { FlatList, Modal, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { School, fetchSchools } from '../services/neis';
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import {
+  FlatList,
+  Modal,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { fetchSchools } from "../../../entities/school/api/neis";
+import { School } from "../../../entities/school/model/neis_school.type";
+import { SchoolSearchModalProps } from "../model";
 
-interface SchoolSearchModalProps {
-  isVisible: boolean;
-  onClose: () => void;
-  onSelect: (school: { name: string; area: string; type: '초등학교' | '중학교' | '고등학교' }) => void;
-}
-
-export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearchModalProps) => {
-  const [searchText, setSearchText] = useState('');
+export const SchoolSearchModal = ({
+  isVisible,
+  onClose,
+  onSelect,
+}: SchoolSearchModalProps) => {
+  const [searchText, setSearchText] = useState("");
   const [results, setResults] = useState<School[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchText.length >= 2) {
         setIsLoading(true);
@@ -31,9 +38,9 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
   }, [searchText]);
 
   const handleSelect = (school: School) => {
-    let type: '초등학교' | '중학교' | '고등학교' = '초등학교';
-    if (school.SCHUL_KND_SC_NM.includes('중학교')) type = '중학교';
-    else if (school.SCHUL_KND_SC_NM.includes('고등학교')) type = '고등학교';
+    let type: "초등학교" | "중학교" | "고등학교" = "초등학교";
+    if (school.SCHUL_KND_SC_NM.includes("중학교")) type = "중학교";
+    else if (school.SCHUL_KND_SC_NM.includes("고등학교")) type = "고등학교";
 
     onSelect({
       name: school.SCHUL_NM,
@@ -41,7 +48,7 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
       type,
     });
     onClose();
-    setSearchText('');
+    setSearchText("");
     setResults([]);
   };
 
@@ -50,10 +57,15 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
       <SafeAreaView className="flex-1 bg-white">
         {/* Header */}
         <View className="flex-row items-center h-[60px] px-[15px] border-b border-gray-100">
-          <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <TouchableOpacity
+            onPress={onClose}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
             <Ionicons name="close" size={24} color="black" />
           </TouchableOpacity>
-          <Text className="flex-1 text-center text-lg font-bold mr-6">학교 검색</Text>
+          <Text className="flex-1 text-center text-lg font-bold mr-6">
+            학교 검색
+          </Text>
         </View>
 
         {/* Search Bar */}
@@ -80,14 +92,20 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
               onPress={() => handleSelect(item)}
               className="py-4 border-b border-gray-100"
             >
-              <Text className="text-sm font-bold text-black">{item.SCHUL_NM}</Text>
-              <Text className="text-xs text-gray-500 mt-1">{item.ORG_RDNMA}</Text>
+              <Text className="text-sm font-bold text-black">
+                {item.SCHUL_NM}
+              </Text>
+              <Text className="text-xs text-gray-500 mt-1">
+                {item.ORG_RDNMA}
+              </Text>
             </TouchableOpacity>
           )}
           ListEmptyComponent={
             searchText.length >= 2 && !isLoading ? (
               <View className="items-center mt-10">
-                <Text className="text-sm text-gray-400">검색 결과가 없습니다.</Text>
+                <Text className="text-sm text-gray-400">
+                  검색 결과가 없습니다.
+                </Text>
               </View>
             ) : null
           }

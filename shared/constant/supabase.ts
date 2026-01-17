@@ -1,4 +1,4 @@
-import { Database } from "@/types/database.types";
+import { Database } from "@/shared/model/database.types";
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
