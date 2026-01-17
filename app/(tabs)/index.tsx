@@ -1,13 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Link } from 'expo-router';
-import React from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-/**
- * EduFit 메인 화면
- * 사용자가 제공한 HTML 디자인을 React Native 및 NativeWind로 변환한 버전입니다.
- */
 export default function TabOneScreen() {
   return (
     <SafeAreaView className="flex-1 bg-[#fafaf8]">
@@ -37,10 +33,7 @@ export default function TabOneScreen() {
               icon="document-text-outline"
               text="체계적인 커리큘럼이 없어요"
             />
-            <PointItem
-              icon="bulb-outline"
-              text="AI 전문성이 부족해요"
-            />
+            <PointItem icon="bulb-outline" text="AI 전문성이 부족해요" />
             <PointItem
               icon="tablet-landscape-outline"
               text="미활용된 디지털 기기가 있어요"
@@ -103,8 +96,12 @@ export default function TabOneScreen() {
                   <Ionicons name="list" size={20} color="#6366f1" />
                 </View>
                 <View>
-                  <Text className="text-base font-bold text-gray-800">내 신청 내역 확인</Text>
-                  <Text className="text-xs text-gray-400">기존에 신청한 내용을 확인하세요</Text>
+                  <Text className="text-base font-bold text-gray-800">
+                    내 신청 내역 확인
+                  </Text>
+                  <Text className="text-xs text-gray-400">
+                    기존에 신청한 내용을 확인하세요
+                  </Text>
                 </View>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
@@ -121,7 +118,12 @@ export default function TabOneScreen() {
             className="bg-indigo-600 h-16 rounded-2xl flex-row justify-center items-center shadow-xl shadow-indigo-400"
           >
             <Text className="text-lg font-bold text-white">신청 시작하기</Text>
-            <Ionicons name="arrow-forward" size={20} color="white" style={{ marginLeft: 8 }} />
+            <Ionicons
+              name="arrow-forward"
+              size={20}
+              color="white"
+              style={{ marginLeft: 8 }}
+            />
           </TouchableOpacity>
         </Link>
       </View>
@@ -129,7 +131,7 @@ export default function TabOneScreen() {
   );
 }
 
-/** 
+/**
  * 고민 포인트 아이템 컴포넌트
  */
 function PointItem({ icon, text }: { icon: any; text: string }) {
@@ -143,7 +145,7 @@ function PointItem({ icon, text }: { icon: any; text: string }) {
   );
 }
 
-/** 
+/**
  * 해결 방안 아이템 컴포넌트
  */
 function SolutionItem({ text }: { text: string }) {

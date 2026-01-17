@@ -1,16 +1,30 @@
-import { useRouter } from 'expo-router';
-import * as SecureStore from 'expo-secure-store';
-import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { CheckboxItem, ErrorMessage, FormButton, FormHeader, FormInput } from '../../components/FormUI';
-import { supabase } from '../../constants/supabase';
-import { TotalForm } from '../../types/form.schema';
+import { useRouter } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import React from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  CheckboxItem,
+  ErrorMessage,
+  FormButton,
+  FormHeader,
+  FormInput,
+} from "../../components/FormUI";
+import { supabase } from "../../constants/supabase";
+import { TotalForm } from "../../types/form.schema";
+
+import { useAuth } from "../../components/AuthContext";
 
 export default function Form3Screen() {
   const router = useRouter();
-  const { control, handleSubmit, formState: { errors }, reset } = useFormContext<TotalForm>();
+  const { user } = useAuth(); // Get user from AuthContext
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useFormContext<TotalForm>();
 
   const resourceOptions = [
     { label: "컴퓨터실 (1인 1PC)", value: "컴퓨터실" },
@@ -30,10 +44,20 @@ export default function Form3Screen() {
   ];
 
   const onSubmit = async (data: TotalForm) => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     try {
       const { data: submission, error: subError } = await supabase
-        .from('form_submissions')
-        .insert([{ status: '접수완료' }])
+        .from("form_submissions")
+        .insert([
+          {
+            status: "접수완료",
+            user_id: user.id,
+          },
+        ])
         .select()
         .single();
 
@@ -42,52 +66,73 @@ export default function Form3Screen() {
       const submissionId = submission.id;
 
       const results = await Promise.all([
-        supabase.from('school_info').insert([{
-          submission_id: submissionId,
-          type: data.school_type,
-          name: data.school_name,
-          area: data.school_area,
-        }]),
-        supabase.from('teacher_info').insert([{
-          submission_id: submissionId,
-          name: data.teacher_name,
-          phone: data.teacher_phone,
-        }]),
-        supabase.from('student_info').insert([{
-          submission_id: submissionId,
-          target_grade: data.student_target_grade,
-          student_count: parseInt(data.student_number) || 0,
-          level: data.student_level,
-        }]),
-        supabase.from('education_config').insert([{
-          submission_id: submissionId,
-          resources: data.school_resource,
-          goals: data.education_goal,
-          period: data.education_period,
-          date: data.education_date,
-        }]),
+        supabase.from("school_info").insert([
+          {
+            submission_id: submissionId,
+            type: data.school_type,
+            name: data.school_name,
+            area: data.school_area,
+          },
+        ]),
+        supabase.from("teacher_info").insert([
+          {
+            submission_id: submissionId,
+            name: data.teacher_name,
+            phone: data.teacher_phone,
+          },
+        ]),
+        supabase.from("student_info").insert([
+          {
+            submission_id: submissionId,
+            target_grade: data.student_target_grade,
+            student_count: parseInt(data.student_number) || 0,
+            level: data.student_level,
+          },
+        ]),
+        supabase.from("education_config").insert([
+          {
+            submission_id: submissionId,
+            resources: data.school_resource,
+            goals: data.education_goal,
+            period: data.education_period,
+            date: data.education_date,
+          },
+        ]),
       ]);
 
-      const firstError = results.find(r => r.error)?.error;
+      const firstError = results.find((r) => r.error)?.error;
       if (firstError) throw firstError;
 
-      const existingIdsJson = await SecureStore.getItemAsync('my_submissions');
+      const existingIdsJson = await SecureStore.getItemAsync("my_submissions");
       const existingIds = existingIdsJson ? JSON.parse(existingIdsJson) : [];
       const newIds = [...existingIds, submissionId];
-      await SecureStore.setItemAsync('my_submissions', JSON.stringify(newIds));
+      await SecureStore.setItemAsync("my_submissions", JSON.stringify(newIds));
 
-      alert('상담 신청이 완료되었습니다!');
+      // 알림 전송: 사용자 전용 채널 (user-notif:USER_ID)
+      await supabase.channel(`user-notif:${user.id}`).send({
+        type: "broadcast",
+        event: "submission-complete",
+        payload: {
+          message: `${data.teacher_name}님, ${data.school_name} 신청이 완료되었습니다!`,
+        },
+      });
+
+      alert("상담 신청이 완료되었습니다!");
       reset();
-      router.push('/');
+      router.push("/");
     } catch (error: any) {
-      console.error('Submission Error:', error);
-      alert('제출 중 오류가 발생했습니다: ' + error.message);
+      console.error("Submission Error:", error);
+      alert("제출 중 오류가 발생했습니다: " + error.message);
     }
   };
 
-  const handleToggleArray = (value: string, currentArray: string[], onChange: (val: string[]) => void) => {
+  const handleToggleArray = (
+    value: string,
+    currentArray: string[],
+    onChange: (val: string[]) => void
+  ) => {
     const newArray = currentArray.includes(value)
-      ? currentArray.filter(item => item !== value)
+      ? currentArray.filter((item) => item !== value)
       : [...currentArray, value];
     onChange(newArray);
   };
@@ -98,7 +143,11 @@ export default function Form3Screen() {
 
       <ScrollView
         className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 46, paddingTop: 40, paddingBottom: 120 }}
+        contentContainerStyle={{
+          paddingHorizontal: 46,
+          paddingTop: 40,
+          paddingBottom: 120,
+        }}
         showsVerticalScrollIndicator={false}
       >
         <View className="gap-[40px]">
@@ -106,7 +155,9 @@ export default function Form3Screen() {
           <View className="gap-[5px]">
             <Text className="text-sm text-black">학교 자원</Text>
             <View className="gap-[10px]">
-              <Text className="text-xs text-black">학교 보유 자원 (복수 선택)</Text>
+              <Text className="text-xs text-black">
+                학교 보유 자원 (복수 선택)
+              </Text>
               <Controller
                 control={control}
                 name="school_resource"
@@ -117,7 +168,9 @@ export default function Form3Screen() {
                         key={opt.value}
                         label={opt.label}
                         checked={value?.includes(opt.value)}
-                        onPress={() => handleToggleArray(opt.value, value || [], onChange)}
+                        onPress={() =>
+                          handleToggleArray(opt.value, value || [], onChange)
+                        }
                       />
                     ))}
                     <ErrorMessage message={errors.school_resource?.message} />
@@ -142,7 +195,9 @@ export default function Form3Screen() {
                         key={opt.value}
                         label={opt.label}
                         checked={value?.includes(opt.value)}
-                        onPress={() => handleToggleArray(opt.value, value || [], onChange)}
+                        onPress={() =>
+                          handleToggleArray(opt.value, value || [], onChange)
+                        }
                       />
                     ))}
                     <ErrorMessage message={errors.education_goal?.message} />
@@ -190,10 +245,7 @@ export default function Form3Screen() {
         </View>
       </ScrollView>
 
-      <FormButton
-        title="신청 완료"
-        onPress={handleSubmit(onSubmit)}
-      />
+      <FormButton title="신청 완료" onPress={handleSubmit(onSubmit)} />
     </SafeAreaView>
   );
 }
