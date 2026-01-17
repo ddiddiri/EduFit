@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/AuthContext";
 import { supabase } from "@/constants/supabase";
+import { Tables } from "@/types/database.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -12,12 +13,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface Submission {
-  id: string;
-  created_at: string;
-  status: string;
-  school_info: { name: string }[];
-}
+type Submission = Tables<"form_submissions"> & {
+  school_info: Pick<Tables<"school_info">, "name">[];
+  student_info: Pick<
+    Tables<"student_info">,
+    "target_grade" | "student_count" | "level"
+  >[];
+};
 
 export default function MySubmissionsScreen() {
   const router = useRouter();
@@ -39,18 +41,15 @@ export default function MySubmissionsScreen() {
       const { data, error } = await supabase
         .from("form_submissions")
         .select(
-          `
-          id,
-          created_at,
-          status,
-          school_info ( name )
-        `
+          "*, school_info(name), student_info(target_grade, student_count, level)",
         )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setSubmissions(data || []);
+      console.log("Fetched submissions data:", JSON.stringify(data, null, 2));
+
+      setSubmissions(data);
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
@@ -95,6 +94,7 @@ export default function MySubmissionsScreen() {
                 <View className="flex-row justify-between items-start mb-3">
                   <View>
                     <Text className="text-xs text-gray-400 font-semibold mb-1">
+                      신청일:{" "}
                       {new Date(item.created_at).toLocaleDateString("ko-KR")}
                     </Text>
                     <Text className="text-lg font-bold text-gray-800">
@@ -103,10 +103,34 @@ export default function MySubmissionsScreen() {
                   </View>
                   <View className="bg-indigo-50 px-3 py-1 rounded-full">
                     <Text className="text-xs font-bold text-indigo-600">
-                      {item.status}
+                      {item.status || "상태 없음"}
                     </Text>
                   </View>
                 </View>
+
+                <View className="bg-gray-50 p-3 rounded-xl mb-3">
+                  <View className="flex-row justify-between mb-2">
+                    <Text className="text-sm text-gray-500">대상 학년</Text>
+                    <Text className="text-sm font-medium text-gray-800">
+                      {item.student_info?.[0]?.target_grade || "-"}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between mb-2">
+                    <Text className="text-sm text-gray-500">인원</Text>
+                    <Text className="text-sm font-medium text-gray-800">
+                      {item.student_info?.[0]?.student_count
+                        ? `${item.student_info[0].student_count}명`
+                        : "-"}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-gray-500">수준</Text>
+                    <Text className="text-sm font-medium text-gray-800">
+                      {item.student_info?.[0]?.level || "-"}
+                    </Text>
+                  </View>
+                </View>
+
                 <View className="flex-row items-center mt-2 pt-3 border-t border-gray-50">
                   <Text className="text-sm text-gray-500">신청 ID: </Text>
                   <Text className="text-sm text-gray-400 font-mono">
