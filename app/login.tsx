@@ -1,9 +1,9 @@
+import { useAuth } from "@/providers/auth";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "./_providers/auth";
 
 export default function LoginScreen() {
   const { signInWithKakao, session, loading } = useAuth();

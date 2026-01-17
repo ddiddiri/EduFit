@@ -2,7 +2,7 @@ import { Session, User } from "@supabase/supabase-js";
 import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../../../shared/constant/supabase";
+import { supabase } from "../../shared/constant/supabase";
 
 WebBrowser.maybeCompleteAuthSession();
 

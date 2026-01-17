@@ -11,8 +11,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { supabase } from "../../shared/constant/supabase";
 import { TotalForm } from "../../shared/model/form.schema";
 
+import { useAuth } from "@/providers/auth";
 import { CheckboxItem } from "@/shared/ui/Checkbox";
-import { useAuth } from "../_providers/auth";
 
 export default function Form3Screen() {
   const router = useRouter();

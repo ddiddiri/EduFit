@@ -1,4 +1,4 @@
-import { useAuth } from "@/app/_providers/auth";
+import { useAuth } from "@/providers/auth";
 import { supabase } from "@/shared/constant/supabase";
 import { Tables } from "@/shared/model/database.types";
 import { Ionicons } from "@expo/vector-icons";
