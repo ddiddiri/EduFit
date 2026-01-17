@@ -1,9 +1,9 @@
+import { useSubmissions } from "@/entities/submission/model/useSubmissions";
 import { useAuth } from "@/providers/auth";
-import { supabase } from "@/shared/constant/supabase";
-import { Tables } from "@/shared/model/database.types";
+import { useRefreshOnFocus } from "@/shared/hooks/useRefreshOnFocus";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -13,49 +13,15 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-type Submission = Tables<"form_submissions"> & {
-  school_info: Pick<Tables<"school_info">, "name">[];
-  student_info: Pick<
-    Tables<"student_info">,
-    "target_grade" | "student_count" | "level"
-  >[];
-};
-
 export default function MySubmissionsScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: submissions = [], isLoading: loading } = useSubmissions(
+    user?.id,
+  );
 
-  useEffect(() => {
-    if (user) {
-      fetchSubmissions();
-      // subscribe to realtime changes if needed, but for now just fetch
-    }
-  }, [user]);
-
-  const fetchSubmissions = async () => {
-    if (!user) return;
-
-    try {
-      const { data, error } = await supabase
-        .from("form_submissions")
-        .select(
-          "*, school_info(name), student_info(target_grade, student_count, level)",
-        )
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      console.log("Fetched submissions data:", JSON.stringify(data, null, 2));
-
-      setSubmissions(data);
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 화면 포커스 시 리패치
+  useRefreshOnFocus(user?.id ? ["submissions", user.id] : ["submissions"]);
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafaf8]">
