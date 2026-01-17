@@ -1,27 +1,44 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ErrorMessage, FormButton, FormHeader, FormInput, FormSelector } from '../../components/FormUI';
-import { SchoolSearchModal } from '../../components/SchoolSearchModal';
-import { TotalForm } from '../../types/form.schema';
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
+import { ScrollView, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ErrorMessage,
+  FormButton,
+  FormHeader,
+  FormInput,
+  FormSelector,
+} from "../../components/FormUI";
+import { SchoolSearchModal } from "../../components/SchoolSearchModal";
+import { TotalForm } from "../../types/form.schema";
 
 export default function Form1Screen() {
   const router = useRouter();
-  const { control, formState: { errors }, trigger, setValue } = useFormContext<TotalForm>();
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const {
+    control,
+    formState: { errors },
+    trigger,
+    setValue,
+  } = useFormContext<TotalForm>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const schoolOptions = [
-    { label: '초등학교', value: '초등학교' },
-    { label: '중학교', value: '중학교' },
-    { label: '고등학교', value: '고등학교' },
+    { label: "초등학교", value: "초등학교" },
+    { label: "중학교", value: "중학교" },
+    { label: "고등학교", value: "고등학교" },
   ];
 
   const handleNext = async () => {
-    const isValid = await trigger(['school_type', 'school_name', 'school_area', 'teacher_name', 'teacher_phone']);
+    const isValid = await trigger([
+      "school_type",
+      "school_name",
+      "school_area",
+      "teacher_name",
+      "teacher_phone",
+    ]);
     if (isValid) {
-      router.push('/form2');
+      router.push("/form2");
     }
   };
 
@@ -56,7 +73,10 @@ export default function Form1Screen() {
             name="school_name"
             render={({ field: { value } }) => (
               <>
-                <TouchableOpacity onPress={() => setIsModalVisible(true)} activeOpacity={1}>
+                <TouchableOpacity
+                  onPress={() => setIsModalVisible(true)}
+                  activeOpacity={1}
+                >
                   <View pointerEvents="none">
                     <FormInput
                       label="학교명"
@@ -75,9 +95,9 @@ export default function Form1Screen() {
             isVisible={isModalVisible}
             onClose={() => setIsModalVisible(false)}
             onSelect={(school) => {
-              setValue('school_name', school.name, { shouldValidate: true });
-              setValue('school_area', school.area, { shouldValidate: true });
-              setValue('school_type', school.type, { shouldValidate: true });
+              setValue("school_name", school.name, { shouldValidate: true });
+              setValue("school_area", school.area, { shouldValidate: true });
+              setValue("school_type", school.type, { shouldValidate: true });
             }}
           />
 
@@ -135,10 +155,7 @@ export default function Form1Screen() {
         </View>
       </ScrollView>
 
-      <FormButton
-        title="다음"
-        onPress={handleNext}
-      />
+      <FormButton title="다음" onPress={handleNext} />
     </SafeAreaView>
   );
 }
