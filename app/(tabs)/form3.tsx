@@ -1,11 +1,11 @@
 import { useCreateSubmission } from "@/entities/submission/model/useCreateSubmission";
 import { useAuth } from "@/providers/auth";
+import { TotalForm } from "@/shared/model/form.schema";
 import { Button } from "@/shared/ui/Button";
 import { CheckboxItem } from "@/shared/ui/Checkbox";
 import { ErrorMessage } from "@/shared/ui/ErrorMessage";
 import { Header } from "@/shared/ui/Header";
 import { Input } from "@/shared/ui/Input";
-import { TotalForm } from "@/shared/model/form.schema";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
@@ -56,10 +56,7 @@ export default function Form3Screen() {
         },
         onError: (error: any) => {
           console.error("Submission Error:", error);
-          Alert.alert(
-            "오류",
-            "제출 중 오류가 발생했습니다: " + error.message,
-          );
+          Alert.alert("오류", "제출 중 오류가 발생했습니다: " + error.message);
         },
       },
     );
@@ -77,31 +74,31 @@ export default function Form3Screen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <Header title="학교 자원 & 교육 목표 (3/3)" />
 
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingHorizontal: 46,
-          paddingTop: 40,
-          paddingBottom: 120,
+          paddingHorizontal: 24,
+          paddingTop: 32,
+          paddingBottom: 140,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="gap-[40px]">
+        <View className="gap-y-8">
           {/* 학교 자원 섹션 */}
-          <View className="gap-[5px]">
-            <Text className="text-sm text-black">학교 자원</Text>
-            <View className="gap-[10px]">
-              <Text className="text-xs text-black">
-                학교 보유 자원 (복수 선택)
+          <View className="gap-y-3">
+            <Text className="text-title-3 text-neutral-800">학교 자원</Text>
+            <View className="gap-y-2">
+              <Text className="text-body-2 text-neutral-500">
+                학교 보유 자원 (복수 선택 가능)
               </Text>
               <Controller
                 control={control}
                 name="school_resource"
                 render={({ field: { value, onChange } }) => (
-                  <View className="gap-[5px]">
+                  <View className="bg-neutral-50 rounded-lg p-4 gap-y-1">
                     {resourceOptions.map((opt) => (
                       <CheckboxItem
                         key={opt.value}
@@ -112,23 +109,25 @@ export default function Form3Screen() {
                         }
                       />
                     ))}
-                    <ErrorMessage message={errors.school_resource?.message} />
                   </View>
                 )}
               />
+              <ErrorMessage message={errors.school_resource?.message} />
             </View>
           </View>
 
           {/* 교육 목표 섹션 */}
-          <View className="gap-[5px]">
-            <Text className="text-sm text-black">교육 목표</Text>
-            <View className="gap-[10px]">
-              <Text className="text-xs text-black">교육 목표 선택</Text>
+          <View className="gap-y-3">
+            <Text className="text-title-3 text-neutral-800">교육 목표</Text>
+            <View className="gap-y-2">
+              <Text className="text-body-2 text-neutral-500">
+                희망하는 교육 목표 (복수 선택 가능)
+              </Text>
               <Controller
                 control={control}
                 name="education_goal"
                 render={({ field: { value, onChange } }) => (
-                  <View className="gap-[5px]">
+                  <View className="bg-neutral-50 rounded-lg p-4 gap-y-1">
                     {goalOptions.map((opt) => (
                       <CheckboxItem
                         key={opt.value}
@@ -139,10 +138,10 @@ export default function Form3Screen() {
                         }
                       />
                     ))}
-                    <ErrorMessage message={errors.education_goal?.message} />
                   </View>
                 )}
               />
+              <ErrorMessage message={errors.education_goal?.message} />
             </View>
           </View>
 
@@ -158,6 +157,7 @@ export default function Form3Screen() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  helperText="희망하는 교육 기간을 입력해주세요"
                 />
                 <ErrorMessage message={errors.education_period?.message} />
               </>
@@ -176,6 +176,7 @@ export default function Form3Screen() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  helperText="희망하는 교육 일정을 입력해주세요"
                 />
                 <ErrorMessage message={errors.education_date?.message} />
               </>
@@ -184,11 +185,18 @@ export default function Form3Screen() {
         </View>
       </ScrollView>
 
-      <Button
-        title={createSubmission.isPending ? "신청 중..." : "신청 완료"}
-        onPress={handleSubmit(onSubmit)}
-        disabled={createSubmission.isPending}
-      />
+      <View className="absolute bottom-10 left-0 right-0 px-6">
+        <Button
+          type="primary"
+          display="full"
+          size="big"
+          onPress={handleSubmit(onSubmit)}
+          loading={createSubmission.isPending}
+          disabled={createSubmission.isPending}
+        >
+          {createSubmission.isPending ? "신청 중..." : "신청 완료"}
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }

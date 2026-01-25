@@ -42,29 +42,30 @@ export default function Form2Screen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <Header title="학생 정보 (2/3)" />
 
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: 47,
-          paddingTop: 40,
-          paddingBottom: 100,
+          paddingHorizontal: 24,
+          paddingTop: 32,
+          paddingBottom: 120,
         }}
       >
-        <View className="gap-5">
+        <View className="gap-y-2">
           <Controller
             control={control}
             name="student_target_grade"
             render={({ field: { onChange, value } }) => (
               <>
                 <Selector
-                  label="초등 - 대상 학년"
+                  label="대상 학년"
                   options={gradeOptions}
                   selectedValue={value}
                   onSelect={onChange}
+                  placeholder="대상 학년을 선택해주세요"
                 />
                 <ErrorMessage message={errors.student_target_grade?.message} />
               </>
@@ -83,6 +84,7 @@ export default function Form2Screen() {
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
+                  helperText="수업에 참여할 학생 수를 입력해주세요"
                 />
                 <ErrorMessage message={errors.student_number?.message} />
               </>
@@ -99,6 +101,7 @@ export default function Form2Screen() {
                   options={levelOptions}
                   selectedValue={value}
                   onSelect={onChange}
+                  placeholder="학생 수준을 선택해주세요"
                 />
                 <ErrorMessage message={errors.student_level?.message} />
               </>
@@ -107,7 +110,11 @@ export default function Form2Screen() {
         </View>
       </ScrollView>
 
-      <Button title="다음" onPress={handleNext} />
+      <View className="absolute bottom-10 left-0 right-0 px-6">
+        <Button type="primary" display="full" size="big" onPress={handleNext}>
+          다음
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }

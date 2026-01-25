@@ -41,25 +41,26 @@ export default function Form1Screen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white" edges={["top"]}>
       <Header title="기본 정보 (1/3)" />
 
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
-        className="flex-1 px-12 pt-10"
+        contentContainerStyle={{ paddingBottom: 120 }}
+        className="flex-1 px-6 pt-8"
         showsVerticalScrollIndicator={false}
       >
-        <View className="gap-y-5">
+        <View className="gap-y-2">
           <Controller
             control={control}
             name="school_type"
             render={({ field: { onChange, value } }) => (
               <>
                 <Selector
-                  label="초중고"
+                  label="학교 구분"
                   options={schoolOptions}
                   selectedValue={value}
                   onSelect={onChange}
+                  placeholder="학교 구분을 선택해주세요"
                 />
                 <ErrorMessage message={errors.school_type?.message} />
               </>
@@ -81,6 +82,7 @@ export default function Form1Screen() {
                       placeholder="학교를 검색하세요"
                       value={value}
                       readOnly
+                      rightIcon="search"
                     />
                   </View>
                 </TouchableOpacity>
@@ -153,7 +155,11 @@ export default function Form1Screen() {
         </View>
       </ScrollView>
 
-      <Button title="다음" onPress={handleNext} />
+      <View className="absolute bottom-10 left-0 right-0 px-6">
+        <Button type="primary" display="full" size="big" onPress={handleNext}>
+          다음
+        </Button>
+      </View>
     </SafeAreaView>
   );
 }

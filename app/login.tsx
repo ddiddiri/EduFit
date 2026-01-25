@@ -1,8 +1,9 @@
 import { useAuth } from "@/providers/auth";
+import { Button } from "@/shared/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
@@ -18,39 +19,45 @@ export default function LoginScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#FEE500" />
+        <ActivityIndicator size="large" color="#0EA5E9" />
       </View>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-white justify-center items-center px-6">
-      <View className="items-center mb-12">
-        <Ionicons name="school-outline" size={80} color="#4F46E5" />
-        <Text className="text-3xl font-bold text-gray-900 mt-4">EduFit</Text>
-        <Text className="text-gray-500 mt-2 text-center">
+      {/* 로고 섹션 */}
+      <View className="items-center mb-16">
+        <View className="w-24 h-24 bg-primary-100 rounded-full items-center justify-center mb-6">
+          <Ionicons name="school-outline" size={48} color="#0EA5E9" />
+        </View>
+        <Text className="text-display-1 text-neutral-800">EduFit</Text>
+        <Text className="text-body-1 text-neutral-500 mt-2 text-center">
           선생님을 위한 맞춤형 교육 자원 매칭 서비스
         </Text>
       </View>
 
-      <TouchableOpacity
-        onPress={signInWithKakao}
-        className="w-full bg-[#FEE500] flex-row justify-center items-center py-4 rounded-xl shadow-sm active:bg-[#FDD835]"
-      >
-        <Ionicons
-          name="chatbubble"
-          size={24}
-          color="#381E1F"
-          className="mr-3"
-        />
-        <Text className="text-[#381E1F] font-bold text-lg ml-2">
-          카카오로 시작하기
-        </Text>
-      </TouchableOpacity>
+      {/* 카카오 로그인 버튼 */}
+      <View className="w-full">
+        <Button
+          type="light"
+          variant="fill"
+          display="full"
+          size="big"
+          onPress={signInWithKakao}
+          leftIcon="chatbubble"
+          className="bg-[#FEE500] border-0"
+        >
+          <Text className="text-[#381E1F] font-bold text-body-1">
+            카카오로 시작하기
+          </Text>
+        </Button>
+      </View>
 
-      <View className="mt-8 flex-row justify-center">
-        <Text className="text-gray-400 text-xs text-center px-10">
-          로그인하면 서비스 이용약관 및 개인정보 처리방침에 동의하는 것으로
+      {/* 약관 안내 */}
+      <View className="mt-8 px-6">
+        <Text className="text-caption-2 text-neutral-400 text-center leading-5">
+          로그인하면 서비스 이용약관 및 개인정보 처리방침에{"\n"}동의하는 것으로
           간주합니다.
         </Text>
       </View>
