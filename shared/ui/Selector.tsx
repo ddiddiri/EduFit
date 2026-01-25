@@ -1,12 +1,12 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "@/shared/ui/Icon";
 import React, { useState } from "react";
 import {
-  FlatList,
-  Modal,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
+    FlatList,
+    Modal,
+    Pressable,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 
 export interface SelectorOption {
@@ -95,8 +95,8 @@ export const Selector: React.FC<SelectorProps> = ({
         >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
-        <Ionicons
-          name={isOpen ? "chevron-up" : "chevron-down"}
+        <Icon
+          name={isOpen ? "chevronUp" : "chevronDown"}
           size={20}
           color="#6B7280"
         />
@@ -154,7 +154,7 @@ export const Selector: React.FC<SelectorProps> = ({
                       {item.label}
                     </Text>
                     {isSelected && (
-                      <Ionicons name="checkmark" size={20} color="#0EA5E9" />
+                      <Icon name="check" size={20} color="#0EA5E9" />
                     )}
                   </Pressable>
                 );

@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Icon, SolarIconName } from "@/shared/ui/Icon";
 import React, { useState } from "react";
 import { Pressable, Text, TextInput, TextInputProps, View } from "react-native";
 
@@ -6,8 +6,8 @@ interface InputProps extends Omit<TextInputProps, "style"> {
   label?: string;
   error?: string;
   helperText?: string;
-  leftIcon?: keyof typeof Ionicons.glyphMap;
-  rightIcon?: keyof typeof Ionicons.glyphMap;
+  leftIcon?: SolarIconName;
+  rightIcon?: SolarIconName;
   disabled?: boolean;
   containerClassName?: string;
 }
@@ -53,7 +53,7 @@ export const Input: React.FC<InputProps> = ({
       >
         {leftIcon && (
           <View className="mr-2">
-            <Ionicons name={leftIcon} size={20} color="#6B7280" />
+            <Icon name={leftIcon} size={20} color="#6B7280" />
           </View>
         )}
 
@@ -78,8 +78,8 @@ export const Input: React.FC<InputProps> = ({
             className="p-1 ml-2"
             onPress={() => setIsSecureVisible(!isSecureVisible)}
           >
-            <Ionicons
-              name={isSecureVisible ? "eye-outline" : "eye-off-outline"}
+            <Icon
+              name={isSecureVisible ? "checkOutline" : "close"}
               size={20}
               color="#6B7280"
             />
@@ -88,7 +88,7 @@ export const Input: React.FC<InputProps> = ({
 
         {!showPasswordToggle && rightIcon && (
           <View className="ml-2">
-            <Ionicons name={rightIcon} size={20} color="#6B7280" />
+            <Icon name={rightIcon} size={20} color="#6B7280" />
           </View>
         )}
       </View>

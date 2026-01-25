@@ -1,11 +1,11 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Icon, SolarIconName } from "@/shared/ui/Icon";
 import React from "react";
 import {
-  ActivityIndicator,
-  GestureResponderEvent,
-  Pressable,
-  Text,
-  View,
+    ActivityIndicator,
+    GestureResponderEvent,
+    Pressable,
+    Text,
+    View,
 } from "react-native";
 
 type ButtonType = "primary" | "danger" | "light" | "dark";
@@ -22,8 +22,8 @@ export interface ButtonProps {
   size?: ButtonSize;
   loading?: boolean;
   disabled?: boolean;
-  leftIcon?: keyof typeof Ionicons.glyphMap;
-  rightIcon?: keyof typeof Ionicons.glyphMap;
+  leftIcon?: SolarIconName;
+  rightIcon?: SolarIconName;
   className?: string;
 }
 
@@ -165,7 +165,7 @@ export const Button: React.FC<ButtonProps> = ({
             >
               <View className="flex-row items-center justify-center gap-2">
                 {leftIcon && (
-                  <Ionicons
+                  <Icon
                     name={leftIcon}
                     size={sizeStyle.iconSize}
                     color={getTextColor()}
@@ -177,7 +177,7 @@ export const Button: React.FC<ButtonProps> = ({
                   {children}
                 </Text>
                 {rightIcon && (
-                  <Ionicons
+                  <Icon
                     name={rightIcon}
                     size={sizeStyle.iconSize}
                     color={getTextColor()}

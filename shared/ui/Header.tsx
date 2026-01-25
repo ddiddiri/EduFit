@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "@/shared/ui/Icon";
 import { useRouter } from "expo-router";
 import React from "react";
 import { GestureResponderEvent, Pressable, Text, View } from "react-native";
@@ -33,14 +33,14 @@ const BackButton: React.FC<BackButtonProps> = ({ onPress }) => {
       onPress={onPress ?? (() => router.back())}
       className="p-2 -ml-2 active:opacity-60"
     >
-      <Ionicons name="chevron-back" size={24} color="#1F2937" />
+      <Icon name="chevronLeft" size={24} color="#1F2937" />
     </Pressable>
   );
 };
 
 const CloseButton: React.FC<CloseButtonProps> = ({ onPress }) => (
   <Pressable onPress={onPress} className="p-2 -mr-2 active:opacity-60">
-    <Ionicons name="close" size={24} color="#1F2937" />
+    <Icon name="close" size={24} color="#1F2937" />
   </Pressable>
 );
 

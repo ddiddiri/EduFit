@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "@/shared/ui/Icon";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -74,11 +74,7 @@ const CheckboxBase: React.FC<
         style={{ width: size, height: size }}
       >
         {isChecked && (
-          <Ionicons
-            name="checkmark"
-            size={size * 0.65}
-            color={getIconColor()}
-          />
+          <Icon name="check" size={size * 0.65} color={getIconColor()} />
         )}
       </View>
       {label && (
@@ -130,7 +126,7 @@ export const CheckboxItem: React.FC<CheckboxItemProps> = ({
         ${disabled ? "bg-neutral-100 border-neutral-200" : ""}
       `}
     >
-      {checked && <Ionicons name="checkmark" size={14} color="#FFFFFF" />}
+      {checked && <Icon name="check" size={14} color="#FFFFFF" />}
     </View>
     <Text
       className={`text-body-2 flex-1 ${
