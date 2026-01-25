@@ -1,21 +1,48 @@
+import { useAuth } from "@/providers/auth";
 import { Button } from "@/shared/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {
   const router = useRouter();
+  const { signOut } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert("로그아웃", "정말 로그아웃 하시겠습니까?", [
+      { text: "취소", style: "cancel" },
+      {
+        text: "로그아웃",
+        style: "destructive",
+        onPress: async () => {
+          await signOut();
+          router.replace("/login");
+        },
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
+      {/* 헤더 - 로그아웃 버튼 */}
+      <View className="flex-row justify-end px-6 pt-4">
+        <TouchableOpacity
+          onPress={handleLogout}
+          className="flex-row items-center gap-x-1"
+        >
+          <Ionicons name="log-out-outline" size={20} color="#6B7280" />
+          <Text className="text-body-2 text-neutral-500">로그아웃</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
         {/* 히어로 섹션 */}
-        <View className="px-6 pt-12 pb-8">
+        <View className="px-6 pt-8 pb-8">
           <Text className="text-display-2 text-neutral-800 tracking-tight">
             학교의 환경과 목표에 맞게{"\n"}
             AI·코딩 수업을 <Text className="text-primary-500">설계합니다.</Text>
