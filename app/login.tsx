@@ -1,9 +1,8 @@
 import { useAuth } from "@/providers/auth";
-import { Button } from "@/shared/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useEffect } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function LoginScreen() {
@@ -39,19 +38,22 @@ export default function LoginScreen() {
 
       {/* 카카오 로그인 버튼 */}
       <View className="w-full">
-        <Button
-          type="light"
-          variant="fill"
-          display="full"
-          size="big"
-          onPress={signInWithKakao}
-          leftIcon="chatbubble"
-          className="bg-[#FEE500] border-0"
-        >
-          <Text className="text-[#381E1F] font-bold text-body-1">
-            카카오로 시작하기
-          </Text>
-        </Button>
+        <Pressable onPress={signInWithKakao}>
+          {({ pressed }) => (
+            <View
+              className={`py-5 px-6 min-h-[56px] rounded-lg items-center justify-center flex-row ${
+                pressed ? "bg-[#E5CF00]" : "bg-[#FEE500]"
+              }`}
+            >
+              <View className="flex-row items-center justify-center gap-2">
+                <Ionicons name="chatbubble" size={20} color="#381E1F" />
+                <Text className="text-[#381E1F] font-bold text-body-1">
+                  카카오로 시작하기
+                </Text>
+              </View>
+            </View>
+          )}
+        </Pressable>
       </View>
 
       {/* 약관 안내 */}
