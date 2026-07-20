@@ -45,23 +45,18 @@ export default function TabOneScreen() {
           </View>
         </View>
 
-        {/* 교사 후기 섹션 */}
+        {/* 슬로건 섹션 */}
         <View className="mt-12 mx-6">
           <View className="p-6 bg-white rounded-3xl shadow-sm border border-gray-100 flex-col">
-            <View className="flex-row mb-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Ionicons key={i} name="star" size={14} color="#FBBF24" />
-              ))}
-            </View>
             <Text className="text-[15px] text-gray-800 leading-relaxed font-medium italic">
-              "체계적인 커리큘럼 덕분에 수업 준비 시간이 50% 줄었습니다"
+              "수업은 찾아가고, 주제는 학교에 맞춥니다"
             </Text>
             <View className="mt-4 flex-row items-center">
               <View className="w-8 h-8 bg-indigo-100 rounded-full items-center justify-center mr-3">
-                <Ionicons name="person" size={16} color="#4F46E5" />
+                <Ionicons name="school" size={16} color="#4F46E5" />
               </View>
               <Text className="text-sm text-gray-500 font-semibold">
-                OO중 김교사
+                ClassFit AI — 찾아가는 학교 맞춤형 AI 코딩융합 교육
               </Text>
             </View>
           </View>

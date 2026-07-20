@@ -1,8 +1,7 @@
 import { useRouter } from "expo-router";
-import * as SecureStore from "expo-secure-store";
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { ScrollView, Text, View } from "react-native";
+import { Alert, Platform, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   CheckboxItem,
@@ -12,13 +11,14 @@ import {
   FormInput,
 } from "../../components/FormUI";
 import { supabase } from "../../constants/supabase";
+import { getItem, setItem } from "../../services/storage";
 import { TotalForm } from "../../types/form.schema";
-
-import { useAuth } from "../../components/AuthContext";
 
 export default function Form3Screen() {
   const router = useRouter();
-  const { user } = useAuth(); // Get user from AuthContext
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [privacyError, setPrivacyError] = useState<string | undefined>();
+  const [submitting, setSubmitting] = useState(false);
   const {
     control,
     handleSubmit,
@@ -43,11 +43,21 @@ export default function Form3Screen() {
     { label: "교사 연수", value: "교사연수" },
   ];
 
+  const notify = (message: string) => {
+    if (Platform.OS === "web") {
+      alert(message);
+    } else {
+      Alert.alert("알림", message);
+    }
+  };
+
   const onSubmit = async (data: TotalForm) => {
-    if (!user) {
-      alert("로그인이 필요합니다.");
+    if (!privacyAgreed) {
+      setPrivacyError("개인정보 수집·이용에 동의해주세요.");
       return;
     }
+    if (submitting) return;
+    setSubmitting(true);
 
     try {
       const { data: submission, error: subError } = await supabase
@@ -55,7 +65,6 @@ export default function Form3Screen() {
         .insert([
           {
             status: "접수완료",
-            user_id: user.id,
           },
         ])
         .select()
@@ -103,26 +112,20 @@ export default function Form3Screen() {
       const firstError = results.find((r) => r.error)?.error;
       if (firstError) throw firstError;
 
-      const existingIdsJson = await SecureStore.getItemAsync("my_submissions");
+      const existingIdsJson = await getItem("my_submissions");
       const existingIds = existingIdsJson ? JSON.parse(existingIdsJson) : [];
       const newIds = [...existingIds, submissionId];
-      await SecureStore.setItemAsync("my_submissions", JSON.stringify(newIds));
+      await setItem("my_submissions", JSON.stringify(newIds));
 
-      // 알림 전송: 사용자 전용 채널 (user-notif:USER_ID)
-      await supabase.channel(`user-notif:${user.id}`).send({
-        type: "broadcast",
-        event: "submission-complete",
-        payload: {
-          message: `${data.teacher_name}님, ${data.school_name} 신청이 완료되었습니다!`,
-        },
-      });
-
-      alert("상담 신청이 완료되었습니다!");
+      notify("상담 신청이 완료되었습니다! 확인 후 연락드리겠습니다.");
       reset();
+      setPrivacyAgreed(false);
       router.push("/");
     } catch (error: any) {
       console.error("Submission Error:", error);
-      alert("제출 중 오류가 발생했습니다: " + error.message);
+      notify("제출 중 오류가 발생했습니다: " + error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -146,7 +149,7 @@ export default function Form3Screen() {
         contentContainerStyle={{
           paddingHorizontal: 46,
           paddingTop: 40,
-          paddingBottom: 120,
+          paddingBottom: 140,
         }}
         showsVerticalScrollIndicator={false}
       >
@@ -242,10 +245,35 @@ export default function Form3Screen() {
               </>
             )}
           />
+
+          {/* 개인정보 수집·이용 동의 */}
+          <View className="gap-[10px] p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <Text className="text-sm font-bold text-black">
+              개인정보 수집·이용 동의 (필수)
+            </Text>
+            <Text className="text-xs text-gray-600 leading-5">
+              수집 항목: 담당 교사 이름, 연락처{"\n"}
+              수집 목적: 출강 수업 상담 및 일정 협의{"\n"}
+              보유 기간: 상담 완료 후 6개월 이내 파기{"\n"}
+              동의를 거부할 수 있으나, 거부 시 상담 신청이 제한됩니다.
+            </Text>
+            <CheckboxItem
+              label="위 내용을 확인하였으며, 개인정보 수집·이용에 동의합니다."
+              checked={privacyAgreed}
+              onPress={() => {
+                setPrivacyAgreed(!privacyAgreed);
+                setPrivacyError(undefined);
+              }}
+            />
+            <ErrorMessage message={privacyError} />
+          </View>
         </View>
       </ScrollView>
 
-      <FormButton title="신청 완료" onPress={handleSubmit(onSubmit)} />
+      <FormButton
+        title={submitting ? "제출 중..." : "신청 완료"}
+        onPress={handleSubmit(onSubmit)}
+      />
     </SafeAreaView>
   );
 }

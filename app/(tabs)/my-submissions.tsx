@@ -1,5 +1,5 @@
-import { useAuth } from "@/components/AuthContext";
 import { supabase } from "@/constants/supabase";
+import { getItem } from "@/services/storage";
 import { Tables } from "@/types/database.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -23,31 +23,33 @@ type Submission = Tables<"form_submissions"> & {
 
 export default function MySubmissionsScreen() {
   const router = useRouter();
-  const { user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      fetchSubmissions();
-      // subscribe to realtime changes if needed, but for now just fetch
-    }
-  }, [user]);
+    fetchSubmissions();
+  }, []);
 
+  // 로그인 없이 운영하므로, 이 기기에서 제출한 신청 ID 목록을 로컬 저장소에서 읽어 조회
   const fetchSubmissions = async () => {
-    if (!user) return;
-
     try {
+      const idsJson = await getItem("my_submissions");
+      const ids: string[] = idsJson ? JSON.parse(idsJson) : [];
+
+      if (ids.length === 0) {
+        setSubmissions([]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from("form_submissions")
         .select(
           "*, school_info(name), student_info(target_grade, student_count, level)",
         )
-        .eq("user_id", user.id)
+        .in("id", ids)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      console.log("Fetched submissions data:", JSON.stringify(data, null, 2));
 
       setSubmissions(data);
     } catch (error) {
@@ -74,7 +76,7 @@ export default function MySubmissionsScreen() {
         <View className="flex-1 justify-center items-center px-10">
           <Ionicons name="document-text-outline" size={64} color="#D1D5DB" />
           <Text className="mt-4 text-lg text-gray-500 font-medium text-center">
-            아직 신청하신 내역이 없습니다.
+            이 기기에서 신청하신 내역이 없습니다.
           </Text>
           <TouchableOpacity
             onPress={() => router.push("/form1")}

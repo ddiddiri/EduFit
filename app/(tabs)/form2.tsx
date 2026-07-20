@@ -1,20 +1,43 @@
 import { useRouter } from 'expo-router';
-import React from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ErrorMessage, FormButton, FormHeader, FormInput, FormSelector } from '../../components/FormUI';
 import { TotalForm } from '../../types/form.schema';
 
-export default function Form2Screen() {
-  const router = useRouter();
-  const { control, formState: { errors }, trigger } = useFormContext<TotalForm>();
-
-  const gradeOptions = [
+const gradeOptionsBySchoolType: Record<string, { label: string; value: string }[]> = {
+  초등학교: [
     { label: '1-2학년', value: '1-2학년' },
     { label: '3-4학년', value: '3-4학년' },
     { label: '5-6학년', value: '5-6학년' },
-  ];
+  ],
+  중학교: [
+    { label: '1학년', value: '중1' },
+    { label: '2학년', value: '중2' },
+    { label: '3학년', value: '중3' },
+  ],
+  고등학교: [
+    { label: '1학년', value: '고1' },
+    { label: '2학년', value: '고2' },
+    { label: '3학년', value: '고3' },
+  ],
+};
+
+export default function Form2Screen() {
+  const router = useRouter();
+  const { control, formState: { errors }, trigger, setValue } = useFormContext<TotalForm>();
+
+  const schoolType = useWatch({ control, name: 'school_type' });
+  const gradeOptions = gradeOptionsBySchoolType[schoolType] ?? gradeOptionsBySchoolType['초등학교'];
+  const selectedGrade = useWatch({ control, name: 'student_target_grade' });
+
+  // 학교급이 바뀌어 기존 선택 학년이 옵션에 없으면 초기화
+  useEffect(() => {
+    if (selectedGrade && !gradeOptions.some((o) => o.value === selectedGrade)) {
+      setValue('student_target_grade', '');
+    }
+  }, [schoolType]);
 
   const levelOptions = [
     { label: '초급', value: '초급' },
@@ -45,7 +68,7 @@ export default function Form2Screen() {
             render={({ field: { onChange, value } }) => (
               <>
                 <FormSelector
-                  label="초등 - 대상 학년"
+                  label={`${schoolType || '초등학교'} - 대상 학년`}
                   options={gradeOptions}
                   selectedValue={value}
                   onSelect={onChange}

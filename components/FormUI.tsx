@@ -124,12 +124,12 @@ export const CheckboxItem = ({ label, checked, onPress }: CheckboxItemProps) => 
     className="flex-row items-center py-1.5 gap-[5px]"
   >
     <View
-      className={`w-3 h-3 border items-center justify-center ${checked ? 'border-black' : 'border-[#E5E7EB]'
+      className={`w-4 h-4 border rounded-sm items-center justify-center ${checked ? 'border-indigo-600 bg-indigo-600' : 'border-gray-400'
         }`}
     >
-      {checked && <MaterialIcons name="check" size={10} color="black" />}
+      {checked && <MaterialIcons name="check" size={12} color="white" />}
     </View>
-    <Text className={`text-xs ${checked ? 'text-black' : 'text-gray-200'}`}>
+    <Text className={`text-xs flex-1 ${checked ? 'text-black font-medium' : 'text-gray-600'}`}>
       {label}
     </Text>
   </TouchableOpacity>
