@@ -5,7 +5,7 @@ export interface School {
   SCHUL_NM: string;           // 학교명
   ENG_SCHUL_NM: string;       // 영문학교명
   SCHUL_KND_SC_NM: string;    // 학교종류명
-  LCTN_NM: string;            // 소재지명
+  LCTN_SC_NM: string;         // 소재지명 (예: "광주광역시") — 실제 NEIS 필드명
   JU_ORG_NM: string;          // 관할조직명
   FOND_SC_NM: string;         // 설립명
   ORG_RDNZC: string;          // 도로명우편번호

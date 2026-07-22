@@ -1,10 +1,12 @@
+import { setEditingSubmissionId } from "@/services/editSession";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabOneScreen() {
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-[#fafaf8]">
       <ScrollView
@@ -105,22 +107,24 @@ export default function TabOneScreen() {
         </View>
       </ScrollView>
 
-      {/* 하단 고정 CTA 버튼 */}
+      {/* 하단 고정 CTA 버튼 — 신규 신청이므로 수정 세션 해제 */}
       <View className="absolute bottom-10 left-0 right-0 px-6">
-        <Link href="/form1" asChild>
-          <TouchableOpacity
-            activeOpacity={0.9}
-            className="bg-indigo-600 h-16 rounded-2xl flex-row justify-center items-center shadow-xl shadow-indigo-400"
-          >
-            <Text className="text-lg font-bold text-white">신청 시작하기</Text>
-            <Ionicons
-              name="arrow-forward"
-              size={20}
-              color="white"
-              style={{ marginLeft: 8 }}
-            />
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => {
+            setEditingSubmissionId(null);
+            router.push("/form1");
+          }}
+          className="bg-indigo-600 h-16 rounded-2xl flex-row justify-center items-center shadow-xl shadow-indigo-400"
+        >
+          <Text className="text-lg font-bold text-white">신청 시작하기</Text>
+          <Ionicons
+            name="arrow-forward"
+            size={20}
+            color="white"
+            style={{ marginLeft: 8 }}
+          />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

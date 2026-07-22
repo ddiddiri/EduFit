@@ -30,6 +30,15 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
     return () => clearTimeout(delayDebounceFn);
   }, [searchText]);
 
+  // 도로명주소에서 "시/도 + 시/군/구"만 추출 (예: "광주광역시 북구 설죽로 530" → "광주광역시 북구")
+  const extractArea = (school: School): string => {
+    const tokens = (school.ORG_RDNMA || '').trim().split(/\s+/);
+    if (tokens.length >= 2 && /[시군구]$/.test(tokens[1])) {
+      return `${tokens[0]} ${tokens[1]}`;
+    }
+    return tokens[0] || school.LCTN_SC_NM || '';
+  };
+
   const handleSelect = (school: School) => {
     let type: '초등학교' | '중학교' | '고등학교' = '초등학교';
     if (school.SCHUL_KND_SC_NM.includes('중학교')) type = '중학교';
@@ -37,7 +46,7 @@ export const SchoolSearchModal = ({ isVisible, onClose, onSelect }: SchoolSearch
 
     onSelect({
       name: school.SCHUL_NM,
-      area: school.LCTN_NM,
+      area: extractArea(school),
       type,
     });
     onClose();

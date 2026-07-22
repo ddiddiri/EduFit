@@ -104,15 +104,21 @@ export default function Form1Screen() {
           <Controller
             control={control}
             name="school_area"
-            render={({ field: { onChange, onBlur, value } }) => (
+            render={({ field: { value } }) => (
               <>
-                <FormInput
-                  label="지역(시/군/구)"
-                  placeholder="예: 서울특별시 강서구"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <TouchableOpacity
+                  onPress={() => setIsModalVisible(true)}
+                  activeOpacity={1}
+                >
+                  <View pointerEvents="none">
+                    <FormInput
+                      label="지역(시/군/구) — 학교 선택 시 자동 입력"
+                      placeholder="위에서 학교를 검색하면 자동으로 입력됩니다"
+                      value={value}
+                      readOnly
+                    />
+                  </View>
+                </TouchableOpacity>
                 <ErrorMessage message={errors.school_area?.message} />
               </>
             )}

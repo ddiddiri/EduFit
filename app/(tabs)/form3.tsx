@@ -11,6 +11,10 @@ import {
   FormInput,
 } from "../../components/FormUI";
 import { supabase } from "../../constants/supabase";
+import {
+  getEditingSubmissionId,
+  setEditingSubmissionId,
+} from "../../services/editSession";
 import { getItem, setItem } from "../../services/storage";
 import { TotalForm } from "../../types/form.schema";
 
@@ -117,7 +121,24 @@ export default function Form3Screen() {
       const newIds = [...existingIds, submissionId];
       await setItem("my_submissions", JSON.stringify(newIds));
 
-      notify("상담 신청이 완료되었습니다! 확인 후 연락드리겠습니다.");
+      // 수정 재신청이면 기존 신청을 취소 처리 (실패해도 새 신청은 유효하므로 진행)
+      const editingId = getEditingSubmissionId();
+      if (editingId) {
+        const { error: cancelError } = await supabase
+          .from("form_submissions")
+          .update({ status: "취소됨" })
+          .eq("id", editingId);
+        if (cancelError) {
+          console.error("이전 신청 취소 실패:", cancelError);
+        }
+        setEditingSubmissionId(null);
+      }
+
+      notify(
+        editingId
+          ? "신청이 수정되었습니다! 확인 후 연락드리겠습니다."
+          : "상담 신청이 완료되었습니다! 확인 후 연락드리겠습니다.",
+      );
       reset();
       setPrivacyAgreed(false);
       router.push("/");
