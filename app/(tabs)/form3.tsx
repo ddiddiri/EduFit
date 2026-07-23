@@ -30,12 +30,33 @@ export default function Form3Screen() {
     reset,
   } = useFormContext<TotalForm>();
 
+  // 노트북/태블릿은 기종(OS)에 따라 수업 가능한 도구가 달라 하위 선택을 받는다
   const resourceOptions = [
     { label: "컴퓨터실 (1인 1PC)", value: "컴퓨터실" },
-    { label: "노트북/태블릿 보유", value: "노트북/태블릿" },
+    { label: "노트북 보유", value: "노트북" },
+    { label: "태블릿 보유", value: "태블릿" },
     { label: "빔프로젝터 또는 TV", value: "빔프로젝터" },
     { label: "IoT/메이커 장비 있음", value: "IoT/메이커장비" },
     { label: "없음 (장비 지원 필요)", value: "없음" },
+  ];
+
+  const laptopSubOptions = [
+    { label: "윈도우 노트북", value: "노트북-윈도우" },
+    { label: "웨일북/크롬북", value: "노트북-웨일북/크롬북" },
+    { label: "모름 (상담 시 확인)", value: "노트북-모름" },
+  ];
+
+  const tabletSubOptions = [
+    { label: "아이패드 (iOS)", value: "태블릿-iOS" },
+    { label: "갤럭시탭 등 (안드로이드)", value: "태블릿-안드로이드" },
+    { label: "서피스 (윈도우)", value: "태블릿-윈도우서피스" },
+    { label: "모름 (상담 시 확인)", value: "태블릿-모름" },
+  ];
+
+  const deviceCountOptions = [
+    { label: "1인 1기기 가능", value: "기기수량-1인1기기" },
+    { label: "공유 기기 (모둠/교대 사용)", value: "기기수량-공유" },
+    { label: "모름 (상담 시 확인)", value: "기기수량-모름" },
   ];
 
   const goalOptions = [
@@ -155,10 +176,36 @@ export default function Form3Screen() {
     currentArray: string[],
     onChange: (val: string[]) => void
   ) => {
-    const newArray = currentArray.includes(value)
+    let newArray = currentArray.includes(value)
       ? currentArray.filter((item) => item !== value)
       : [...currentArray, value];
+
+    // 상위 항목 해제 시 하위 선택도 함께 제거
+    if (value === "노트북" && !newArray.includes("노트북")) {
+      newArray = newArray.filter((item) => !item.startsWith("노트북-"));
+    }
+    if (value === "태블릿" && !newArray.includes("태블릿")) {
+      newArray = newArray.filter((item) => !item.startsWith("태블릿-"));
+    }
+    // 노트북/태블릿 둘 다 해제되면 기기 수량 선택도 제거
+    if (!newArray.includes("노트북") && !newArray.includes("태블릿")) {
+      newArray = newArray.filter((item) => !item.startsWith("기기수량-"));
+    }
     onChange(newArray);
+  };
+
+  // 기기 수량은 단일 선택 (라디오처럼 동작)
+  const handleSelectDeviceCount = (
+    value: string,
+    currentArray: string[],
+    onChange: (val: string[]) => void
+  ) => {
+    const withoutCount = currentArray.filter(
+      (item) => !item.startsWith("기기수량-")
+    );
+    onChange(
+      currentArray.includes(value) ? withoutCount : [...withoutCount, value]
+    );
   };
 
   return (
@@ -185,21 +232,90 @@ export default function Form3Screen() {
               <Controller
                 control={control}
                 name="school_resource"
-                render={({ field: { value, onChange } }) => (
-                  <View className="gap-[5px]">
-                    {resourceOptions.map((opt) => (
-                      <CheckboxItem
-                        key={opt.value}
-                        label={opt.label}
-                        checked={value?.includes(opt.value)}
-                        onPress={() =>
-                          handleToggleArray(opt.value, value || [], onChange)
-                        }
-                      />
-                    ))}
-                    <ErrorMessage message={errors.school_resource?.message} />
-                  </View>
-                )}
+                render={({ field: { value, onChange } }) => {
+                  const selected = value || [];
+                  const hasLaptop = selected.includes("노트북");
+                  const hasTablet = selected.includes("태블릿");
+                  return (
+                    <View className="gap-[5px]">
+                      {resourceOptions.map((opt) => (
+                        <View key={opt.value}>
+                          <CheckboxItem
+                            label={opt.label}
+                            checked={selected.includes(opt.value)}
+                            onPress={() =>
+                              handleToggleArray(opt.value, selected, onChange)
+                            }
+                          />
+                          {opt.value === "노트북" && hasLaptop && (
+                            <View className="ml-6 pl-3 border-l-2 border-indigo-200 gap-[2px]">
+                              <Text className="text-xs text-gray-500 mt-1">
+                                노트북 종류 (복수 선택)
+                              </Text>
+                              {laptopSubOptions.map((sub) => (
+                                <CheckboxItem
+                                  key={sub.value}
+                                  label={sub.label}
+                                  checked={selected.includes(sub.value)}
+                                  onPress={() =>
+                                    handleToggleArray(
+                                      sub.value,
+                                      selected,
+                                      onChange
+                                    )
+                                  }
+                                />
+                              ))}
+                            </View>
+                          )}
+                          {opt.value === "태블릿" && hasTablet && (
+                            <View className="ml-6 pl-3 border-l-2 border-indigo-200 gap-[2px]">
+                              <Text className="text-xs text-gray-500 mt-1">
+                                태블릿 종류 (복수 선택)
+                              </Text>
+                              {tabletSubOptions.map((sub) => (
+                                <CheckboxItem
+                                  key={sub.value}
+                                  label={sub.label}
+                                  checked={selected.includes(sub.value)}
+                                  onPress={() =>
+                                    handleToggleArray(
+                                      sub.value,
+                                      selected,
+                                      onChange
+                                    )
+                                  }
+                                />
+                              ))}
+                            </View>
+                          )}
+                        </View>
+                      ))}
+                      {(hasLaptop || hasTablet) && (
+                        <View className="mt-2 p-3 bg-gray-50 rounded-lg gap-[2px]">
+                          <Text className="text-xs text-black font-medium">
+                            기기 수량
+                          </Text>
+                          {deviceCountOptions.map((opt) => (
+                            <CheckboxItem
+                              key={opt.value}
+                              label={opt.label}
+                              checked={selected.includes(opt.value)}
+                              onPress={() =>
+                                handleSelectDeviceCount(
+                                  opt.value,
+                                  selected,
+                                  onChange
+                                )
+                              }
+                            />
+                          ))}
+                        </View>
+                      )}
+                      <ErrorMessage message={errors.school_resource?.message} />
+                    </View>
+                  );
+                }}
               />
             </View>
           </View>
